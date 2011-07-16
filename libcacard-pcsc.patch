@@ -1,0 +1,94 @@
+--- libcacard-0.1.2/passthru.c.orig	2010-12-09 12:36:19.000000000 +0100
++++ libcacard-0.1.2/passthru.c	2011-07-16 13:10:29.302870462 +0200
+@@ -9,6 +9,8 @@
+ #include "mutex.h"
+ #include "vcard_emul.h"
+ #include "passthru.h"
++#include <stdint.h>
++#include <stdio.h>
+ #include <stdlib.h>
+ #include <string.h>
+ #include <pcsclite.h>
+@@ -325,8 +327,8 @@
+ /*
+  *  Get the state entry that matches this reader. If none found, return NULL
+  */
+-static SCARD_READERSTATE_A *
+-passthru_get_reader_state(SCARD_READERSTATE_A *reader_states,
++static SCARD_READERSTATE *
++passthru_get_reader_state(SCARD_READERSTATE *reader_states,
+                           int reader_count, char *name)
+ {
+     int i;
+@@ -349,8 +351,8 @@
+ /*
+  * find a card slot that has been cleared out
+  */
+-static SCARD_READERSTATE_A *
+-passthru_get_blank_reader(SCARD_READERSTATE_A *reader_states, int reader_count)
++static SCARD_READERSTATE *
++passthru_get_blank_reader(SCARD_READERSTATE *reader_states, int reader_count)
+ {
+     return passthru_get_reader_state(reader_states,  reader_count, NULL);
+ }
+@@ -365,7 +367,7 @@
+ {
+     char *reader_list = NULL;
+     int reader_list_len = 0;
+-    SCARD_READERSTATE_A *reader_states = NULL;
++    SCARD_READERSTATE *reader_states = NULL;
+     int reader_count = 0;     /* number of active readers */
+     int max_reader_count = 0; /* size of the reader_state array (including
+                                  inactive readers) */
+@@ -414,7 +416,7 @@
+             /* count the readers and mark the ones that are still with us */
+             for (reader_entry = new_reader_list; *reader_entry;
+                  reader_entry += strlen(reader_entry)+1) {
+-                SCARD_READERSTATE_A *this_state;
++                SCARD_READERSTATE *this_state;
+                 new_reader_count++;
+                 /* if the reader is still on the list, mark it present */
+                 this_state = passthru_get_reader_state(reader_states,
+@@ -441,7 +443,7 @@
+                  * array up into those locations vacated by ejected readers. */
+                 for (i=reader_count-1; i < (new_reader_count -1); i--) {
+                         if (reader_states[i].szReader) {
+-                            SCARD_READERSTATE_A *blank_reader;
++                            SCARD_READERSTATE *blank_reader;
+                             blank_reader =
+                                 passthru_get_blank_reader(reader_states,
+                                                           new_reader_count);
+@@ -453,12 +455,12 @@
+             }
+             /* handle the growing list */
+             if (new_reader_count >  max_reader_count) {
+-                SCARD_READERSTATE_A *new_reader_states;
++                SCARD_READERSTATE *new_reader_states;
+ 
+                 /* grow the list */
+                 new_reader_states =
+-                    (SCARD_READERSTATE_A *)realloc(reader_states,
+-                        sizeof(SCARD_READERSTATE_A)*new_reader_count);
++                    (SCARD_READERSTATE *)realloc(reader_states,
++                        sizeof(SCARD_READERSTATE)*new_reader_count);
+                 if (new_reader_states) {
+                     /* successful, update our current state */
+                     reader_states = new_reader_states;
+@@ -477,7 +479,7 @@
+             /* now walk the reader list, updating the state */
+             for (reader_entry = new_reader_list; *reader_entry;
+                  reader_entry += strlen(reader_entry)+1) {
+-                SCARD_READERSTATE_A *this_state;
++                SCARD_READERSTATE *this_state;
+                 this_state = passthru_get_reader_state(reader_states,
+                                                        new_reader_count,
+                                                        reader_entry);
+@@ -528,7 +530,7 @@
+                 return; /* exit thread */
+             }
+             status = passthru_pcsc_lite_init();
+-            assert(status == CARD_DONE);
++            assert(status == VCARD_DONE);
+             sleep(1);
+             continue;
+         }

@@ -1,0 +1,28 @@
+--- libcacard-0.1.2/configure.ac.orig	2011-02-03 16:03:10.000000000 +0100
++++ libcacard-0.1.2/configure.ac	2011-07-16 12:54:44.076172146 +0200
+@@ -28,14 +28,14 @@
+ dnl =========================================================================
+ dnl Check deps
+ 
+-CAC_CARD_NONPKGCONFIG_LIBS+=" -pthread"
++CAC_CARD_NONPKGCONFIG_LIBS="$CAC_CARD_NONPKGCONFIG_LIBS -pthread"
+ 
+ CAC_CARD_REQUIRES=""
+ 
+ PKG_CHECK_MODULES(NSS, nss)
+ AC_SUBST(NSS_CFLAGS)
+ AC_SUBST(NSS_LIBS)
+-CAC_CARD_REQUIRES+=" nss"
++CAC_CARD_REQUIRES="$CAC_CARD_REQUIRES nss"
+ 
+ 
+ AS_IF([test "$_cflags_is_set" = "yes"], [], [
+@@ -78,7 +78,7 @@
+ PKG_CHECK_MODULES(PCSC,libpcsclite)
+ AC_SUBST(PCSC_CFLAGS)
+ AC_SUBST(PCSC_LIBS)
+-CAC_CARD_REQUIRES+=" pcsc-lite"
++CAC_CARD_REQUIRES="$CAC_CARD_REQUIRES pcsc-lite"
+ USE_PASSTHRU=-DUSE_PASSTHRU
+ AC_SUBST(USE_PASSTHRU)
+ fi
