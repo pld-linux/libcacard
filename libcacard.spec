@@ -15,6 +15,7 @@ BuildRequires:	automake
 BuildRequires:	libtool
 BuildRequires:	nss-devel
 BuildRequires:	pcsc-lite-devel >= 1.6
+BuildRequires:	pkgconfig
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
