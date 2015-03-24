@@ -2,7 +2,7 @@ Summary:	Virtual Smart Card Emulator library
 Summary(pl.UTF-8):	Biblioteka emulator wirtualnych kart procesorowych
 Name:		libcacard
 Version:	0.1.2
-Release:	1
+Release:	2
 License:	GPL v3
 Group:		Libraries
 Source0:	http://spice-space.org/download/libcacard/%{name}-%{version}.tar.gz
