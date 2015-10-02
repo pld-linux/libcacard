@@ -1,48 +1,51 @@
-Summary:	Virtual Smart Card Emulator library
-Summary(pl.UTF-8):	Biblioteka emulator wirtualnych kart procesorowych
+#
+# Conditional build:
+%bcond_without	static_libs	# static library
+#
+Summary:	CAC (Common Access Card) library
+Summary(pl.UTF-8):	Biblioteka CAC (Common Access Library) - ogólny dostęp do kart procesorowych
 Name:		libcacard
-Version:	0.1.2
-Release:	2
-License:	GPL v3
+Version:	2.5.0
+Release:	1
+License:	LGPL v2.1+
 Group:		Libraries
-Source0:	http://spice-space.org/download/libcacard/%{name}-%{version}.tar.gz
-# Source0-md5:	d06480131936ea45a60e98c87b2bb4d9
-Patch0:		%{name}-sh.patch
-Patch1:		%{name}-pcsc.patch
-URL:		http://spice-space.org/
+Source0:	http://www.spice-space.org/download/libcacard/%{name}-%{version}.tar.xz
+# Source0-md5:	68638ee98ae654db8e7c0b6dcc6e426b
+URL:		http://www.spice-space.org/
 BuildRequires:	autoconf >= 2.60
+BuildRequires:	autoconf-archive >= 2015.09.25
 BuildRequires:	automake
-BuildRequires:	libtool
-BuildRequires:	nss-devel
-BuildRequires:	pcsc-lite-devel >= 1.6
+BuildRequires:	glib2-devel >= 1:2.22
+BuildRequires:	libtool >= 2:2
+BuildRequires:	nss-devel >= 1:3.12.8
 BuildRequires:	pkgconfig
+BuildRequires:	tar >= 1:1.22
+BuildRequires:	xz
+Requires:	glib2 >= 1:2.22
+Requires:	nss >= 1:3.12.8
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
-This emulator is designed to provide emulation of actual smart cards
-to a virtual card reader running in a guest virtual machine. The
-emulated smart cards can be representations of real smart cards, where
-the necessary functions such as signing, card removal/insertion, etc.
-are mapped to real, physical cards which are shared with the client
-machine the emulator is running on, or the cards could be pure
-software constructs.
+This library provides emulation of smart cards to a virtual card
+reader running in a guest virtual machine.
+
+It implements DoD CAC standard with separate PKI containers
+(compatible coolkey), using certificates read from NSS.
 
 %description -l pl.UTF-8
-Ten pakiet ma na celu zapewnienie emulacji kart procesorowych w
-wirtualnym czytniku kart działającym na wirtualnej maszynie-gościu.
-Emulowane karty procesorowe mogą reprezentować prawdziwe karty
-procesorowe, których potrzebne funkcje, takie jak podpisywanie,
-wyjęcie/włożenie karty itp. są odwzorowywane na prawdziwe karty
-współdzielone z maszyną kliencką, na której działa emulator, lub
-karty czysto programowe.
+Ta biblioteka zapewnia emulację kart procesorowych dla wirtualnego
+czytnika kart działającego na maszynie wirtualnej gościa.
+
+Implementuje standard CAC DoD z osobnymi kontenerami PKI (zgodny
+coolkey) przy użyciu certyfikatów odczytywanych z NSS.
 
 %package devel
 Summary:	Header files for cacard library
 Summary(pl.UTF-8):	Pliki nagłówkowe biblioteki cacard
 Group:		Development/Libraries
 Requires:	%{name} = %{version}-%{release}
-Requires:	nss-devel
-Requires:	pcsc-lite-devel >= 1.6
+Requires:	glib2-devel >= 1:2.22
+Requires:	nss-devel >= 1:3.12.8
 
 %description devel
 Header files for cacard library.
@@ -64,17 +67,19 @@ Statyczna biblioteka cacard.
 
 %prep
 %setup -q
-%patch0 -p1
-%patch1 -p1
+
+# force new version from autoconf-archive (original one uses non-POSIX ${V:N} syntax)
+%{__rm} m4/ax_compiler_flags_cflags.m4
 
 %build
 %{__libtoolize}
-%{__aclocal}
+%{__aclocal} -I m4
 %{__autoconf}
 %{__autoheader}
 %{__automake}
 %configure \
-	--enable-passthru
+	%{?with_static_libs:--enable-static}
+
 %{__make}
 
 %install
@@ -94,7 +99,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(644,root,root,755)
-%doc AUTHORS README
+%doc ChangeLog NEWS README.md
 %attr(755,root,root) %{_bindir}/vscclient
 %attr(755,root,root) %{_libdir}/libcacard.so.*.*.*
 %attr(755,root,root) %ghost %{_libdir}/libcacard.so.0
@@ -105,6 +110,8 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/cacard
 %{_pkgconfigdir}/libcacard.pc
 
+%if %{with static_libs}
 %files static
 %defattr(644,root,root,755)
 %{_libdir}/libcacard.a
+%endif
