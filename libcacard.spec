@@ -68,6 +68,9 @@ Statyczna biblioteka cacard.
 %prep
 %setup -q
 
+# take version from .tarball-version instead of using missing git-related script
+%{__sed} -i -e '1s,build-aux/git-version-gen,tr -d "\\n" <,' configure.ac
+
 # force new version from autoconf-archive (original one uses non-POSIX ${V:N} syntax)
 %{__rm} m4/ax_compiler_flags_cflags.m4
 
