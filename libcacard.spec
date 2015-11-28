@@ -5,12 +5,12 @@
 Summary:	CAC (Common Access Card) library
 Summary(pl.UTF-8):	Biblioteka CAC (Common Access Library) - ogólny dostęp do kart procesorowych
 Name:		libcacard
-Version:	2.5.0
+Version:	2.5.1
 Release:	1
 License:	LGPL v2.1+
 Group:		Libraries
 Source0:	http://www.spice-space.org/download/libcacard/%{name}-%{version}.tar.xz
-# Source0-md5:	68638ee98ae654db8e7c0b6dcc6e426b
+# Source0-md5:	85276a16c24a8961b09cbcc18d7d853b
 URL:		http://www.spice-space.org/
 BuildRequires:	autoconf >= 2.60
 BuildRequires:	autoconf-archive >= 2015.09.25
@@ -18,6 +18,7 @@ BuildRequires:	automake
 BuildRequires:	glib2-devel >= 1:2.22
 BuildRequires:	libtool >= 2:2
 BuildRequires:	nss-devel >= 1:3.12.8
+BuildRequires:	pcsc-lite-devel
 BuildRequires:	pkgconfig
 BuildRequires:	tar >= 1:1.22
 BuildRequires:	xz
