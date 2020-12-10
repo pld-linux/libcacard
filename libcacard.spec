@@ -5,23 +5,23 @@
 Summary:	CAC (Common Access Card) library
 Summary(pl.UTF-8):	Biblioteka CAC (Common Access Library) - ogólny dostęp do kart procesorowych
 Name:		libcacard
-Version:	2.7.0
+Version:	2.8.0
 Release:	1
 License:	LGPL v2.1+
 Group:		Libraries
 Source0:	https://www.spice-space.org/download/libcacard/%{name}-%{version}.tar.xz
-# Source0-md5:	b4cd5746c05d92169aa96f6ed4027dec
+# Source0-md5:	71ac03db1786bdd891d8185a2524909f
 URL:		https://www.spice-space.org/
-BuildRequires:	autoconf >= 2.60
-BuildRequires:	automake
-BuildRequires:	glib2-devel >= 1:2.22
-BuildRequires:	libtool >= 2:2
+BuildRequires:	glib2-devel >= 1:2.32
+BuildRequires:	meson
+BuildRequires:	ninja >= 1.5
 BuildRequires:	nss-devel >= 1:3.12.8
 BuildRequires:	pcsc-lite-devel
 BuildRequires:	pkgconfig
+BuildRequires:	rpmbuild(macros) >= 1.736
 BuildRequires:	tar >= 1:1.22
 BuildRequires:	xz
-Requires:	glib2 >= 1:2.22
+Requires:	glib2 >= 1:2.32
 Requires:	nss >= 1:3.12.8
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
@@ -44,7 +44,7 @@ Summary:	Header files for cacard library
 Summary(pl.UTF-8):	Pliki nagłówkowe biblioteki cacard
 Group:		Development/Libraries
 Requires:	%{name} = %{version}-%{release}
-Requires:	glib2-devel >= 1:2.22
+Requires:	glib2-devel >= 1:2.32
 Requires:	nss-devel >= 1:3.12.8
 
 %description devel
@@ -68,28 +68,18 @@ Statyczna biblioteka cacard.
 %prep
 %setup -q
 
-# take version from .tarball-version instead of using missing git-related script
-%{__sed} -i -e '1s,build-aux/git-version-gen,tr -d "\\n" <,' configure.ac
-
 %build
-%{__libtoolize}
-%{__aclocal} -I m4
-%{__autoconf}
-%{__autoheader}
-%{__automake}
-%configure \
-	%{?with_static_libs:--enable-static}
+%meson build \
+	%{!?with_static_libs:--default-library=shared} \
+	-Ddisable_tests=true \
+	-Dpcsc=enabled
 
-%{__make}
+%ninja_build -C build
 
 %install
 rm -rf $RPM_BUILD_ROOT
 
-%{__make} install \
-	DESTDIR=$RPM_BUILD_ROOT
-
-# obsoleted by pkg-config
-%{__rm} $RPM_BUILD_ROOT%{_libdir}/libcacard.la
+%ninja_install -C build
 
 %clean
 rm -rf $RPM_BUILD_ROOT
