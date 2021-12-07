@@ -5,12 +5,12 @@
 Summary:	CAC (Common Access Card) library
 Summary(pl.UTF-8):	Biblioteka CAC (Common Access Library) - ogólny dostęp do kart procesorowych
 Name:		libcacard
-Version:	2.8.0
+Version:	2.8.1
 Release:	1
 License:	LGPL v2.1+
 Group:		Libraries
 Source0:	https://www.spice-space.org/download/libcacard/%{name}-%{version}.tar.xz
-# Source0-md5:	71ac03db1786bdd891d8185a2524909f
+# Source0-md5:	2a431d2fbd76a3e294fc254b496cdc70
 URL:		https://www.spice-space.org/
 BuildRequires:	glib2-devel >= 1:2.32
 BuildRequires:	meson
